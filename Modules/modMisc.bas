@@ -1,3 +1,4 @@
+Attribute VB_Name = "modMisc"
                                                                                                                                           ' _
     :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::                                   ' _
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   ' _
@@ -8,28 +9,31 @@
     |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                   ' _
                                                                                                                                           ' _
     AUTHOR:   Kallun Willock                                                                                                              ' _
-    PURPOSE:  Collection of misc. procedures                                                                            ' _
+    PURPOSE:  Collection of misc. procedures                                                                                              ' _
                                                                                                                                           ' _
     VERSION:  1.0        25/05/2021                                                                                                       ' _
                                                                                                                                           ' _
-    NOTES:    [â€¢]                                  ' _
-															
-              -  [â€¢]:	   [â€¢]                                                      							   ' _
+    NOTES:    [•]                                                                                                                         ' _
                                                                                                                                           ' _
-    TODO:     [â€¢]                                                                                       				  ' _
-              																  ' _
+              -  [•]:      [•]                                                                                                            ' _
+                                                                                                                                          ' _
+    TODO:     [•]                                                                                                                         ' _
+                                                                                                                                          ' _
     ...................................................................................................                                   ' _
     :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 Sub INCREMENT(ByRef ItemValue As Long, Optional Step As Long = 1)
     ItemValue = ItemValue + Step
 End Sub
+
 Sub DECREMENT(ByRef ItemValue As Long, Optional Step As Long = 1)
     ItemValue = ItemValue - Step
 End Sub
+
 Function ISITODD(Target) As Boolean
     ISITODD = WorksheetFunction.IsOdd(Target)
 End Function
+
 Function ISITEVEN(Target) As Boolean
     ISITEVEN = WorksheetFunction.IsEven(Target)
 End Function
@@ -42,27 +46,36 @@ End Function
 
 '  Procedures:   Information re: files and folders
 
-Function GETFILENAME(Filename As String) As String
+Function GETFILENAME(FILENAME As String) As String
     Dim FSO As Object
     Set FSO = CreateObject("Scripting.FileSystemObject")
-    GETFILENAME = FSO.GETFILENAME(Filename)
-    Set FSO = Nothing
-End Function
-Function GETEXTENSION(Filename As String) As String
-    On Error Resume Next
-    Dim FSO As Object
-    Set FSO = CreateObject("Scripting.FileSystemObject")
-    GETEXTENSION = FSO.getextensionname(Filename)
-    Set FSO = Nothing
-End Function
-Function GETPATH(Filename As String) As String
-    Dim FSO As Object
-    Set FSO = CreateObject("Scripting.FileSystemObject")
-    GETPATH = Replace(FSO.GetAbsolutePathName(Filename), FSO.GETFILENAME(Filename), "", , , vbDatabaseCompare)
+    GETFILENAME = FSO.GETFILENAME(FILENAME)
     Set FSO = Nothing
 End Function
 
-Function DOWNLOAD(URL As String, FILENAME As String) As String
-    WGH = WorksheetFunction.WebService(strurl)
-    CreateObject("Scripting.FileSystemObject").CreateTextFile(FILENAME, True).WriteLine ("Code")
+Function GETEXTENSION(FILENAME As String) As String
+    On Error Resume Next
+    Dim FSO As Object
+    Set FSO = CreateObject("Scripting.FileSystemObject")
+    GETEXTENSION = FSO.GetExtensionName(FILENAME)
+    Set FSO = Nothing
 End Function
+
+Function GETPATH(FILENAME As String) As String
+    Dim FSO As Object
+    Set FSO = CreateObject("Scripting.FileSystemObject")
+    GETPATH = Replace(FSO.GetAbsolutePathName(FILENAME), FSO.GETFILENAME(FILENAME), "", , , vbDatabaseCompare)
+    Set FSO = Nothing
+End Function
+
+Sub DOWNLOAD(URL As String, FILENAME As String)
+    WGH = WSWEBSERVICE(URL)
+    If WGH <> vbNullString Then CreateObject("Scripting.FileSystemObject").CreateTextFile(FILENAME, True).WriteLine WGH
+End Sub
+
+Function WSWEBSERVICE(URL As String)
+    On Error Resume Next
+    WSWEBSERVICE = Application.WorksheetFunction.WebService(URL)
+End Function
+
+
