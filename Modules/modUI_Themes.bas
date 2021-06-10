@@ -9,19 +9,14 @@ Attribute VB_Name = "modUI_Themes"
     |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                   ' _
                                                                                                                                           ' _
     AUTHOR:   Kallun Willock                                                                                                              ' _
-    PURPOSE:  API procedure to generate balloon tooltips / toast ui element                                                               ' _
+    PURPOSE:  Code to: (1) engage the GetSysColor / SetSysColor APIs.                                                                     ' _
+                       (2) check the registry to ascertain which UI mode the user has set Office products: dark grey, black, light        ' _
                                                                                                                                           ' _
-    VERSION:  1.1        09/06/2021                                                                                                       ' _
+    VERSION:  1.2        10/06/2021         Corrected these module details                                                                ' _
                                                                                                                                           ' _
-    NOTES:    Using the Toast function is relatively straight-forward. Through trial-and-error,                                           ' _
-              I have worked out that:                                                                                                     ' _
+    NOTES:    N/A                                                                                                                         ' _
                                                                                                                                           ' _
-              -  TITLE:   The TITLE argument will accept a maximum of 63 characters.                                                         ' _
-              -  CONTENT: The CONTENT argument will accept a maximum of 154 characters.                                                      ' _
-              -  TYPE:    The first four types are accompanied with a system beep, whereas the latter four are silent.                       ' _
-                                                                                                                                          ' _
-    TODO:     Icons - should be able to add icons                                                                                         ' _
-              Timeout - NB: uTimeout - utility?                                                                                           ' _
+    TODO:     VBIDE - port code for changes to colour palette/colour setting for VBIDE                                                    ' _
 
     Option Explicit
     
@@ -32,7 +27,8 @@ Attribute VB_Name = "modUI_Themes"
         Private Declare Function GetSysColor Lib "user32" (ByVal nIndex As Long) As Long
         Private Declare Function SetSysColors Lib "user32" (ByVal nChanges As Long, lpSysColor As Long, lpColorValues As Long) As Long
     #End If
-                                                                                   ' _
+                                                                                   
+                                                                                   
     Private Enum UITHEME
         DARKGREY = 3
         BLACK = 4
