@@ -196,7 +196,7 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
     End Sub
 
     '  Procedures:   SetFocusToMainApp
-    '  Note:         sRemember to set the Userform's ShowModal property to False.
+    '  Note:         Remember to set the Userform's ShowModal property to False.
 
     Sub SetFocusToMainApp()
 
