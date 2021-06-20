@@ -61,7 +61,7 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
     :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     
-    '  Procedures:   HideTitleBorder
+    '  Procedure:    HideTitleBorder
     '  Purpose:      Removes the border and titlebar from the standard windows userform.
     
     Sub HideTitleBorder(UserformCaption As String)
@@ -89,7 +89,7 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
         
     End Function
     
-    '  Procedures:   MoveUserForm
+    '  Procedure:    MoveUserForm
     '  Purpose:      Method of moving userform when there is no titlebar.
     '  Notes:        This is usually put in the userform in the MouseMove event.
     '                If it is going to sit outside the userform, the subroutine
@@ -101,14 +101,14 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
         Dim Res             As LongPtr
         Dim hWndForm        As LongPtr
     
-        hwnd = FindWindow("ThunderDFrame", UserformCaption)
+        hWndForm = FindWindow("ThunderDFrame", UserformCaption)
     
         ReleaseCapture
         Res = SendMessage(hwnd, WM_NCLBUTTONDOWN, HTCAPTION, ByVal 0&)
         
     End Sub
     
-    '  Procedures:   FormTranslucent
+    '  Procedure:    FormOpacity
     '  Purpose:      Method of adjusting the userform opacity that changes - from fully
     '                transparent/translucent to fully opaque.
     
@@ -127,7 +127,7 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
     
     End Sub
     
-    '  Procedures:   FormTransparent
+    '  Procedure:    FormTransparent
     '  Purpose:      Method of making a certain given colour on the userform transparent.
     
     Sub FormTransparent(UserformCaption As String, Color As Variant)
@@ -143,7 +143,7 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
     
     End Sub
     
-    '  Procedures:   RemoveCloseButton
+    '  Procedure:    RemoveCloseButton
     '  Purpose:      Removes the close button, but also removes the title bar.
     '                It leaves a white bar where the title bar would have been.
     
@@ -159,7 +159,7 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
         
     End Sub
     
-    '  Procedures:   GetWindowDimensions
+    '  Procedure:    GetWindowDimensions
     '  Purpose:      Gets the dimensions of a given window. Need to pass the RECT struct.
     
     Sub GetWindowDimensions(UserformCaption As String, ByRef TargetRect As RECT)
@@ -179,7 +179,10 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
         
     End Sub
     
-    Sub RoundedCorners(UserformCaption As String)
+    '  Procedure:    RoundedCorners
+    '  Purpose:      Replace the corners of a given window with 'rounded corners' - set by parameters X3 and Y3.
+
+    Sub RoundedCorners(UserformCaption As String, X3 As Long, Y3 As Long)
         
         '  CreateRoundRectRgn, SetWindowRgn, DeleteObject, CreatePolygonRgn, CreateEllipticRgn, SendMessage, ReleaseCapture
         
@@ -189,7 +192,7 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
         
         hWndForm = FindWindow("ThunderDFrame", UserformCaption)
         GetWindowDimensions UserformCaption, hWndRect
-        DefinedRegion = CreateRoundRectRgn(hWndRect.Left, hWndRect.Top, hWndRect.Right, hWndRect.Bottom, 20, 20)
+        DefinedRegion = CreateRoundRectRgn(hWndRect.Left, hWndRect.Top, hWndRect.Right, hWndRect.Bottom, X3, Y3)
         SetWindowRgn hWndForm, DefinedRegion, True
         DeleteObject DefinedRegion
         
