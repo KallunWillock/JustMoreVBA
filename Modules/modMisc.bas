@@ -1,7 +1,7 @@
 Attribute VB_Name = "modMisc"
                                                                                                                                           ' _
     :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::                                   ' _
-    '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   ' _
+    ''''''''''''''''''''''s'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   ' _
     |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                   ' _
     ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                   ' _
     ||||||||||||||||||||||||||             MISCELLANEOUS             ||||||||||||||||||||||||||||||||||                                   ' _
@@ -13,35 +13,35 @@ Attribute VB_Name = "modMisc"
                                                                                                                                           ' _
     VERSION:  1.0        25/05/2021                                                                                                       ' _
                                                                                                                                           ' _
-    NOTES:    [•]                                                                                                                         ' _
+    NOTES:    [ï¿½]                                                                                                                         ' _
                                                                                                                                           ' _
-              -  [•]:      [•]                                                                                                            ' _
+              -  [ï¿½]:      [ï¿½]                                                                                                            ' _
                                                                                                                                           ' _
-    TODO:     [•]                                                                                                                         ' _
+    TODO:     [ï¿½]                                                                                                                         ' _
                                                                                                                                           ' _
     ...................................................................................................                                   ' _
     :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-Sub INCREMENT(ByRef ItemValue As Long, Optional Step As Long = 1)
-    ItemValue = ItemValue + Step
+Sub INCREMENT(ByRef ItemValue As Long, Optional Amount As Long = 1)
+    ItemValue = ItemValue + Amount
 End Sub
 
-Sub DECREMENT(ByRef ItemValue As Long, Optional Step As Long = 1)
-    ItemValue = ItemValue - Step
+Sub DECREMENT(ByRef ItemValue As Long, Optional Amount As Long = 1)
+    ItemValue = ItemValue - Amount
 End Sub
 
 Function ISITODD(Target) As Boolean
-    ISITODD = WorksheetFunction.IsOdd(Target)
+    ISITODD = Application.WorksheetFunction.IsOdd(Target)
 End Function
 
 Function ISITEVEN(Target) As Boolean
-    ISITEVEN = WorksheetFunction.IsEven(Target)
+    ISITEVEN = Application.WorksheetFunction.IsEven(Target)
 End Function
 
 Function HOWMANY(Source As String, TargetText As String) As Long
     If InStr(Source, TargetText) = 0 Then HOWMANY = 0: Exit Function
-    whenremoved = Len(Source) - Len(Replace(Source, TargetText, ""))
-    HOWMANY = whenremoved / Len(TargetText)
+    FinalLength = Len(Source) - Len(Replace(Source, TargetText, ""))
+    HOWMANY = FinalLength / Len(TargetText)
 End Function
 
 '  Procedures:   Information re: files and folders

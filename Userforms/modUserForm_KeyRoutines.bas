@@ -1,5 +1,5 @@
 Attribute VB_Name = "modUserForm_KeyRoutines"
-                                                                                                                                         ' _
+                                                                                                                                ' _
     :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::                                   ' _
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   ' _
     |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                   ' _
@@ -7,20 +7,21 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
     ||||||||||||||||||||||||||        USERFORM - KEY ROUTINES        ||||||||||||||||||||||||||||||||||                                   ' _
     ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                   ' _
     |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                   ' _
-                                                                                                                                          ' _
+                                                                                                                                        ' _
     AUTHOR:   Kallun Willock                                                                                                              ' _
     PURPOSE:  Collection of standard Userform-related routines                                                                            ' _
-                                                                                                                                          ' _
-    VERSION:  1.1        09/06/2021                                                                                                       ' _
-              1.0        21/05/2021                                                                                                       ' _
-                                                                                                                                          ' _
+                                                                                                                                            ' _
+    VERSION:    1.2         20/06/2021          Added 'SetFocusToMainApp' subroutine and further edits
+                1.1         09/06/2021                                                                                                       ' _
+                1.0         21/05/2021                                                                s                                       ' _
+                                                                                                                                        ' _
     NOTES:    See procedure notes.                                                                                                        ' _
 
     Private Type RECT
-        Left                                As Long
-        Top                                 As Long
-        Right                               As Long
-        Bottom                              As Long
+        Left                As Long
+        Top                 As Long
+        Right               As Long
+        Bottom              As Long
     End Type
     
     Private Declare PtrSafe Function FindWindow Lib "user32" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As LongPtr
@@ -40,6 +41,7 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
     Private Declare PtrSafe Function SetLayeredWindowAttributes Lib "user32" (ByVal hwnd As Long, ByVal crey As Byte, ByVal bAlpha As Byte, ByVal dwFlags As Long) As Long
 
     Private Declare PtrSafe Function FindWindowEx Lib "user32" Alias "FindWindowExA" (ByVal hWnd1 As Long, ByVal hWnd2 As Long, ByVal lpsz1 As String, ByVal lpsz2 As String) As Long
+    Private Declare PtrSafe Function SetForegroundWindow Lib "user32" (ByVal hwnd As LongPtr) As Long
                                                                                                                                             
     Private Const WM_NCLBUTTONDOWN = &HA1                           '  CONSTANTS FOR MOVING THE USERFORM
     Private Const HTCAPTION = 2
@@ -54,7 +56,7 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
     Private Const WS_EX_LAYERED = &H80000                           '  CONSTANTS FOR TRANSLUCENT
     Private Const LWA_COLORKEY = &H1
     Private Const LWA_ALPHA = &H2                                                                                                         ' _
-                                                                                                                                          ' _
+                                                                                                                                        ' _
     ...................................................................................................                                   ' _
     :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -147,9 +149,9 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
     
     Sub RemoveCloseButton(UserformCaption As String)
     
-        Dim hWndForm            As LongPtr
-        Dim lStyle              As LongPtr
-       
+        Dim hWndForm        As LongPtr
+        Dim lStyle          As LongPtr
+
         hWndForm = FindWindow("ThunderDFrame", UserformCaption)
     
         lStyle = GetWindow(hWndForm, GWL_STYE)
@@ -161,13 +163,13 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
     '  Purpose:      Gets the dimensions of a given window. Need to pass the RECT struct.
     
     Sub GetWindowDimensions(UserformCaption As String, ByRef TargetRect As RECT)
-         
+
         ' Private Declare PtrSafe Function GetWindowRect Lib "user32" (ByVal hWnd As LongPtr, lpRect As RECT) As Long
         ' Private Type RECT
-        '     Left                                As Long
-        '     Top                                 As Long
-        '     Right                               As Long
-        '     Bottom                              As Long
+        '     Left          As Long
+        '     Top           As Long
+        '     Right         As Long
+        '     Bottom        As Long
         ' End Type
         
         Dim hWndForm            As LongPtr
@@ -181,9 +183,9 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
         
         '  CreateRoundRectRgn, SetWindowRgn, DeleteObject, CreatePolygonRgn, CreateEllipticRgn, SendMessage, ReleaseCapture
         
-        Dim hWndForm            As LongPtr
-        Dim DefinedRegion       As LongPtr
-        Dim hWndRect            As RECT
+        Dim hWndForm        As LongPtr
+        Dim DefinedRegion   As LongPtr
+        Dim hWndRect        As RECT
         
         hWndForm = FindWindow("ThunderDFrame", UserformCaption)
         GetWindowDimensions UserformCaption, hWndRect
@@ -191,4 +193,17 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
         SetWindowRgn hWndForm, DefinedRegion, True
         DeleteObject DefinedRegion
         
+    End Sub
+
+    '  Procedures:   SetFocusToMainApp
+    '  Note:         sRemember to set the Userform's ShowModal property to False.
+
+    Sub SetFocusToMainApp()
+
+        ' Set focus back to the main Excel Application
+        Dim hWndForm        As LongPtr
+        
+        hWndForm = FindWindow("XLMAIN", Application.Caption)
+        SetForegroundWindow hWndForm
+
     End Sub
