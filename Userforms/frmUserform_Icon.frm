@@ -13,6 +13,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
                                                                                                                                           ' _
     :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::                                   ' _
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   ' _
@@ -52,8 +53,6 @@ Attribute VB_Exposed = False
                                                                                                                                           ' _
     ...................................................................................................                                   ' _
     :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-
 
 Private Sub UserForm_Initialize()
     
@@ -123,7 +122,7 @@ Private Sub tbFilename_DropButtonClick()
     
 End Sub
 
-Sub ConvertToHex(Filename As String, target As Range)
+Sub ConvertToHex(Filename As String, Target As Range)
     
     Dim FileNum As Long
     Dim IconHexCode As String
@@ -149,10 +148,47 @@ Sub ConvertToHex(Filename As String, target As Range)
     ' Remove the final '|' character from teh string
     IconHexCode = Left(IconHexCode, Len(IconHexCode) - 1)
     
-    target.Value = IconHexCode
+    Target.Value = IconHexCode
 
 End Sub
 
+Function HexToIconFile(Target As Variant) As String
+    
+    Dim IconHexCode As String
+    
+    If TypeName(Target) = "Range" Then
+        IconHexCode = Target.Value
+    ElseIf TypeName(Target) = "String" Then
+        IconHexCode = Target
+    Else: Debug.Print "Error: input needs to be either a string or a range": Exit Function
+    End If
+    
+    If Len(IconHexCode) = 32767 Then Debug.Print "Hex code is likely incomplete.": Exit Function
+    If Right(IconHexCode, 1) = "|" Then IconHexCode = Left(IconHexCode, Len(IconHexCode) - 1)
+    
+    Dim IconBytes() As String
+    IconBytes = Split(IconHexCode, "|")
+
+    Dim FileNum As Long, Filename As String
+    FileNum = FreeFile
+    Filename = Environ("Temp") & "\TempUFrmIcon.ICO"
+
+    ' Note that the code will delete any file with the same name in the Temp folder.
+    If Len(Dir(Filename)) > 0 Then Kill Filename
+        
+    Open Filename For Binary As #FileNum
+    
+    Dim i As Long
+    
+    For i = LBound(IconBytes) To UBound(IconBytes)
+        Put #FileNum, , CByte("&H" & IconBytes(i))
+    Next i
+    
+    Close #FileNum
+    
+    HexToIconFile = Filename
+
+End Function
 
 Function IcoToHex(Filename As String) As String
 
