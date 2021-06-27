@@ -64,7 +64,7 @@ End Function
 Function GETPATH(FILENAME As String) As String
     Dim FSO As Object
     Set FSO = CreateObject("Scripting.FileSystemObject")
-    GETPATH = Replace(FSO.GetAbsolutePathName(FILENAME), FSO.GETFILENAME(FILENAME), "", , , vbDatabaseCompare)
+    GETPATH = Replace(FSO.GetAbsolutePathName(FILENAME), FSO.GETFILENAME(FILENAME), "", , , vbTextCompare)
     Set FSO = Nothing
 End Function
 
