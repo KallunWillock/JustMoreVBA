@@ -67,15 +67,3 @@ Function GETPATH(FILENAME As String) As String
     GETPATH = Replace(FSO.GetAbsolutePathName(FILENAME), FSO.GETFILENAME(FILENAME), "", , , vbTextCompare)
     Set FSO = Nothing
 End Function
-
-Sub DOWNLOAD(URL As String, FILENAME As String)
-    WGH = WSWEBSERVICE(URL)
-    If WGH <> vbNullString Then CreateObject("Scripting.FileSystemObject").CreateTextFile(FILENAME, True).WriteLine WGH
-End Sub
-
-Function WSWEBSERVICE(URL As String)
-    On Error Resume Next
-    WSWEBSERVICE = Application.WorksheetFunction.WebService(URL)
-End Function
-
-

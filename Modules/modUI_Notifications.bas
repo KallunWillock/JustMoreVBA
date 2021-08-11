@@ -1,18 +1,17 @@
-Attribute VB_Name = "modUI_Toast"
-
                                                                                                                                           ' _
     :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::                                   ' _
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   ' _
     |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                   ' _
     ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                   ' _
-    ||||||||||||||||||||||||||              UI - TOAST               ||||||||||||||||||||||||||||||||||                                   ' _
+    ||||||||||||||||||||||||||           UI - NOTIFICATIONS          ||||||||||||||||||||||||||||||||||                                   ' _
     ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                   ' _
     |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                   ' _
                                                                                                                                           ' _
     AUTHOR:   Kallun Willock                                                                                                              ' _
     PURPOSE:  API procedure to generate balloon tooltips / toast UI element                                                               ' _
                                                                                                                                           ' _
-    VERSION:  1.0        21/05/2021                                                                                                       ' _
+    VERSION:  1.1        10/08/2021         Repurpoed this module to focus on notifications.                                              ' _
+              1.0        21/05/2021                                                                                                       ' _
                                                                                                                                           ' _
     NOTES:    Using the Toast function is relatively straight-forward. Through trial-and-error,                                           ' _
               I have worked out that:                                                                                                     ' _
@@ -60,31 +59,51 @@ Attribute VB_Name = "modUI_Toast"
     ...................................................................................................                              ' _
     :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-Sub TestToast()
-    
-    Dim Title               As String
-    Dim Content             As String
-    Dim TestType            As ToastType
+    Sub TestToast()
+        
+        Dim Title               As String
+        Dim Content             As String
+        Dim TestType            As ToastType
 
-    Title = "TestToast!"
-    Content = "This is some sample content."
-    TestType = Information
-    
-    TOAST Title, Content, TestType
+        Title = "TestToast!"
+        Content = "This is some sample content."
+        TestType = Information
+        
+        TOAST Title, Content, TestType
 
-End Sub
+    End Sub
 
-Sub TOAST(Optional ByVal Title As String, Optional ByVal Content As String, Optional ByVal Flag As ToastType)
-    
-    With nfIconData
-        .dwInfoFlags = Flag
-        .uFlags = &H10
-        .szInfoTitle = Title
-        .szInfo = Content
-        .cbSize = &H1F8
-    End With
-    
-    Shell_NotifyIconA &H0, nfIconData
-    Shell_NotifyIconA &H1, nfIconData
+    Sub TOAST(Optional ByVal Title As String, Optional ByVal Content As String, Optional ByVal Flag As ToastType)
+        
+        With nfIconData
+            .dwInfoFlags = Flag
+            .uFlags = &H10
+            .szInfoTitle = Title
+            .szInfo = Content
+            .cbSize = &H1F8
+        End With
+        
+        Shell_NotifyIconA &H0, nfIconData
+        Shell_NotifyIconA &H1, nfIconData
 
-End Sub
+    End Sub
+                                                                                                                                        ' _
+    ...................................................................................................                                 ' _
+    :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
+    '  Procedures:   ClearStatusBar; ResetStatusBar
+    '  Purpose:      Method of displaying a final message to the user before resetting the StatusBar.
+
+    Sub ClearStatusBar(Optional Message As String, Optional DelaySeconds As Long = 0)
+        Application.StatusBar = Message
+        If DelaySeconds > 59 Then DelaySeconds = 59
+        Application.OnTime Now + TimeValue("00:00:" & Format(DelaySeconds, "00")), "ResetStatusBar"
+    End Sub
+
+    Sub ResetStatusBar()
+        Application.DisplayStatusBar = True
+        Application.StatusBar = ""
+    End Sub
+
+

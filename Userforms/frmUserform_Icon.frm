@@ -1,12 +1,12 @@
-VERSION 5.00
-Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmUserform_Icon 
-   Caption         =   "Icon in a userform"
-   ClientHeight    =   4824
-   ClientLeft      =   108
-   ClientTop       =   456
-   ClientWidth     =   9024.001
+Version 5#
+Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmUserform_Icon
+   Caption = "Icon in a userform"
+   ClientHeight = 4824
+   ClientLeft = 108
+   ClientTop = 456
+   ClientWidth = 9024.001
    OleObjectBlob   =   "frmUserform_Icon.frx":0000
-   StartUpPosition =   1  'CenterOwner
+   StartUpPosition = 1    'CenterOwner
 End
 Attribute VB_Name = "frmUserform_Icon"
 Attribute VB_GlobalNameSpace = False
@@ -122,7 +122,7 @@ Private Sub tbFilename_DropButtonClick()
     
 End Sub
 
-Sub ConvertToHex(Filename As String, Target As Range)
+Sub ConvertToHex(ByVal Filename As String, ByVal Target As Range)
     
     Dim FileNum As Long
     Dim IconHexCode As String
@@ -152,7 +152,7 @@ Sub ConvertToHex(Filename As String, Target As Range)
 
 End Sub
 
-Function HexToIconFile(Target As Variant) As String
+Function HexToIconFile(ByVal Target As Variant) As String
     
     Dim IconHexCode As String
     
@@ -190,7 +190,7 @@ Function HexToIconFile(Target As Variant) As String
 
 End Function
 
-Function IcoToHex(Filename As String) As String
+Function IcoToHex(ByVal Filename As String) As String
 
     Dim FileNum As Long
     Dim IconHexCode As String
@@ -204,16 +204,18 @@ Function IcoToHex(Filename As String) As String
     ReDim IconBytes(LOF(FileNum) - 1)
     Get FileNum, , IconBytes
     Close FileNum
+    
     ' Each byte is converted to hexidecimal and separated by a '|'
     For Each IconByte In IconBytes
         IconHexCode = IconHexCode & Hex(IconByte) & "|"
     Next
+    
     ' Remove the final '|' character from teh string
     IcoToHex = Left(IconHexCode, Len(IconHexCode) - 1)
     
 End Function
 
-Function IsValidFile(Filename As String) As Boolean
+Function IsValidFile(ByVal Filename As String) As Boolean
     
     If InStr(Filename, ":\") And Right(Filename, 4) = ".ico" Then
          IsValidFile = Len(Dir(Filename)) > 0
@@ -221,7 +223,7 @@ Function IsValidFile(Filename As String) As Boolean
 
 End Function
 
-Sub ProcessFileSize(Filename As String)
+Sub ProcessFileSize(ByVal Filename As String)
     
     Dim Filesize        As Long
     
@@ -233,7 +235,7 @@ Sub ProcessFileSize(Filename As String)
 
 End Sub
 
-Function CodeToVariable(HexCode As String) As String
+Function CodeToVariable(ByVal HexCode As String) As String
     
     Dim CodeLength      As Long
     Dim MaxLength       As Long
@@ -302,3 +304,5 @@ Function GetIconCode3() As String
    GetIconCode3 = HexCode
 
 End Function
+
+

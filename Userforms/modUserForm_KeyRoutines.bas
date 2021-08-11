@@ -1,4 +1,3 @@
-Attribute VB_Name = "modUserForm_KeyRoutines"
                                                                                                                                             ' _
     :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::                                     ' _
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                     ' _
@@ -11,21 +10,30 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
     AUTHOR:   Kallun Willock                                                                                                                ' _
     PURPOSE:  Collection of standard Userform-related routines                                                                              ' _
                                                                                                                                             ' _
-    VERSION:    1.3         22/06/2021          Fixes to 'FormTransparent' subroutine, reordering routines,                                 ' _
+    VERSION:    1.5         11/08/2021          Added offset details, relocated shape-related routines                                      ' _
+                                                in separate file, added freezeform procedure                                                ' _
+                1.4         02/08/2021          Added AlwaysOnTop and Polygon-shaped userform routines                                      ' _
+                1.3         22/06/2021          Fixes to 'FormTransparent' subroutine, reordering routines,                                 ' _
                                                 adding userform shape-related functions                                                     ' _
                 1.2         20/06/2021          Added 'SetFocusToMainApp' subroutine and further edits                                      ' _
                 1.1         09/06/2021                                                                                                      ' _
                 1.0         21/05/2021                                                                                                      ' _
                                                                                                                                             ' _
-    NOTES:    To get the best result from adjusting the userform shape, remove the titlebar and border first - HideTitleBorder              ' _
-
+    
+    Option Explicit
+    
     Private Type RECT
         Left                As Long
         Top                 As Long
         Right               As Long
         Bottom              As Long
     End Type
-    
+
+    Private Type POINTAPI
+        X                   As Long
+        Y                   As Long
+    End Type
+
     Private Declare PtrSafe Function FindWindow Lib "user32" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As LongPtr
     Private Declare PtrSafe Function FindWindowEx Lib "user32" Alias "FindWindowExA" (ByVal hWnd1 As Long, ByVal hWnd2 As Long, ByVal lpsz1 As String, ByVal lpsz2 As String) As Long
     
@@ -45,10 +53,18 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
                                                                                                                                             
     Private Declare PtrSafe Function SetLayeredWindowAttributes Lib "user32" (ByVal hwnd As Long, ByVal crey As Byte, ByVal bAlpha As Byte, ByVal dwFlags As Long) As Long
 
+    Private Declare PtrSafe Function SetWindowPos Lib "user32" (ByVal hwnd As LongPtr, ByVal hWndInsertAfter As LongPtr, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
     Private Declare PtrSafe Function SetForegroundWindow Lib "user32" (ByVal hwnd As LongPtr) As Long
-                                                                                                                                            
+
+    Private Declare PtrSafe Function LockWindowUpdate Lib "user32" (ByVal hwndLock As LongPtr) As Long
+
     Private Const WM_NCLBUTTONDOWN = &HA1                           '  CONSTANTS FOR MOVING THE USERFORM
     Private Const HTCAPTION = 2
+    
+    Private Const SWP_NOMOVE = &H2
+    Private Const SWP_NOSIZE = &H1
+    Private Const HWND_TOPMOST = -1
+
                                                                     '  CONSTANTS FOR HIDETITLEBORDER
     Private Const GWL_STYLE As Long = (-16)                         '  Window style offset
     Private Const GWL_EXSTYLE As Long = (-20)                       '  Window extended style offset
@@ -67,8 +83,10 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
     
     '  Procedure:    HideTitleBorder
     '  Purpose:      Removes the border and titlebar from the standard windows userform.
-    
-    Sub HideTitleBorder(UserformCaption As String)
+    '  Note:         Removing the title bar and the border will necessarily move all the controls on the userform.
+    '                The resulting offset is Left = 6 pixels and Top = 15 pixels
+
+    Sub HideTitleBorder(ByVal UserformCaption As String)
     
         Dim lngWindow       As LongPtr
         Dim hWndForm        As LongPtr
@@ -93,30 +111,11 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
         
     End Function
     
-    '  Procedure:    MoveUserForm
-    '  Purpose:      Method of moving userform when there is no titlebar.
-    '  Notes:        This is usually put in the userform in the MouseMove event.
-    '                If it is going to sit outside the userform, the subroutine
-    '                should be called conditionally - usually, by checking that
-    '                the Button is being pressed - that needs to be checked at the form level.
-    
-    Sub MoveUserForm(UserformCaption As String)
-    
-        Dim Res             As LongPtr
-        Dim hWndForm        As LongPtr
-    
-        hWndForm = FindWindow("ThunderDFrame", UserformCaption)
-    
-        ReleaseCapture
-        Res = SendMessage(hwnd, WM_NCLBUTTONDOWN, HTCAPTION, ByVal 0&)
-        
-    End Sub
-    
     '  Procedure:    FormOpacity
     '  Purpose:      Method of adjusting the userform opacity that changes - from fully
     '                transparent/translucent to fully opaque.
     
-    Sub FormOpacity(UserformCaption As String, Opacity As Long)
+    Sub FormOpacity(ByVal UserformCaption As String, ByVal Opacity As Long)
     
         Dim Index           As LongPtr
         Dim hWndForm        As LongPtr
@@ -134,7 +133,7 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
     '  Procedure:    FormTransparent
     '  Purpose:      Method of making a certain given colour on the userform transparent.
     
-    Sub FormTransparent(UserformCaption As String, Color As Variant)
+    Sub FormTransparent(ByVal UserformCaption As String, ByVal Color As Variant)
         
         Dim Index           As LongPtr
         Dim hWndForm        As LongPtr
@@ -153,7 +152,7 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
     '  Purpose:      Removes the close button, but also removes the title bar.
     '                It leaves a white bar where the title bar would have been.
     
-    Sub RemoveCloseButton(UserformCaption As String)
+    Sub RemoveCloseButton(ByVal UserformCaption As String)
     
         Dim hWndForm        As LongPtr
         Dim lStyle          As LongPtr
@@ -166,11 +165,11 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
     End Sub
 
     '  Procedures:   SetFocusToMainApp
+    '  Purpose:      Set focus back to the main Excel Application
     '  Note:         Remember to set the Userform's ShowModal property to False.
 
     Sub SetFocusToMainApp()
 
-        ' Set focus back to the main Excel Application
         Dim hWndForm        As LongPtr
         
         hWndForm = FindWindow("XLMAIN", Application.Caption)
@@ -178,66 +177,56 @@ Attribute VB_Name = "modUserForm_KeyRoutines"
 
     End Sub
 
+    '  Procedures:   Frozen (experimental?)
+    '  Purpose:      Freezes redrawing of the screen to reduce/prevent flicker.
+    '  Note:         Originally in a class module, so not sure if it's wise to remove it. Important
+    '                to unfreeze at the destruction of the userform.
+
+    Sub Frozen(ByVal UserformCaption As String, ByVal State As Boolean)
+
+        Dim hWndForm        As LongPtr
+
+        hWndForm = FindWindow("ThunderDFrame", UserformCaption)
+        LockWindowUpdate IIf(State, hWndForm, 0&)
+
+    End Sub
+
                                                                                                                                           ' _
     :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::                                   ' _
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   ' _
-                                      USERFORM - SHAPE                                                                                    ' _
+                                      USERFORM - POSITION                                                                                 ' _
     ...................................................................................................                                   ' _
     :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-    '  Procedure:    GetWindowDimensions
-    '  Purpose:      Gets the dimensions of a given window. Need to pass the RECT struct.
+    '  Procedure:    MoveUserForm
+    '  Purpose:      Method of moving userform when there is no titlebar.
+    '  Notes:        This is usually put in the userform in the MouseMove event.
+    '                If it is going to sit outside the userform, the subroutine
+    '                should be called conditionally - usually, by checking that
+    '                the Button is being pressed - that needs to be checked at the form level.
     
-    Sub GetWindowDimensions(UserformCaption As String, ByRef TargetRect As RECT)
-
-        ' Private Declare PtrSafe Function GetWindowRect Lib "user32" (ByVal hWnd As LongPtr, lpRect As RECT) As Long
-        ' Private Type RECT
-        '     Left          As Long
-        '     Top           As Long
-        '     Right         As Long
-        '     Bottom        As Long
-        ' End Type
-        
-        Dim hWndForm            As LongPtr
-        
+    Sub MoveUserForm(ByVal UserformCaption As String)
+    
+        Dim Res             As LongPtr
+        Dim hWndForm        As LongPtr
+    
         hWndForm = FindWindow("ThunderDFrame", UserformCaption)
-        GetWindowRect hWndForm, TargetRect
+    
+        ReleaseCapture
+        Res = SendMessage(hWndForm, WM_NCLBUTTONDOWN, HTCAPTION, ByVal 0&)
         
     End Sub
     
-    '  Procedure:    RoundedCorners
-    '  Purpose:      Replace the corners of a given window with 'rounded corners' - set by parameters X3 and Y3.
-
-    Sub RoundedCorners(UserformCaption As String, X3 As Long, Y3 As Long)
-        
-        '  CreateRoundRectRgn, SetWindowRgn, DeleteObject, CreatePolygonRgn, CreateEllipticRgn, SendMessage, ReleaseCapture
-        
+    '  Procedure:    AlwaysOnTop
+    '  Purpose:      Method of positioning the userform above all others.
+    
+    Sub AlwaysOnTop(ByVal UserformCaption As String)
+    
+        Dim Res             As LongPtr
         Dim hWndForm        As LongPtr
-        Dim DefinedRegion   As LongPtr
-        Dim hWndRect        As RECT
-        
+    
         hWndForm = FindWindow("ThunderDFrame", UserformCaption)
-        GetWindowDimensions UserformCaption, hWndRect
-        DefinedRegion = CreateRoundRectRgn(hWndRect.Left, hWndRect.Top, hWndRect.Right, hWndRect.Bottom, X3, Y3)
-        SetWindowRgn hWndForm, DefinedRegion, True
-        DeleteObject DefinedRegion
+        Res = SetWindowPos(hWndForm, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE)
         
     End Sub
 
-    '  Procedure:    EllipticalWindow
-    '  Purpose:      Converts an existing window into an ellipsis - using the upper-left and lower-right coordinates of the window 
-    '                as the bounding box coordinates.
-
-    Sub EllipticalWindow(UserformCaption As String)
-        
-        Dim hWndForm        As LongPtr
-        Dim DefinedRegion   As LongPtr
-        Dim hWndRect        As RECT
-        
-        hWndForm = FindWindow("ThunderDFrame", UserformCaption)
-        GetWindowDimensions UserformCaption, hWndRect
-        DefinedRegion = CreateEllipticRgn(hWndRect.Left, hWndRect.Top, hWndRect.Right, hWndRect.Bottom)
-        SetWindowRgn hWndForm, DefinedRegion, True
-        DeleteObject DefinedRegion
-        
-    End Sub
