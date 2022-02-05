@@ -26,13 +26,13 @@
     #End If
                                                                                 
                                                                                 
-    Private Enum UITHEME
+    Enum UITHEME
         DARKGREY = 3
         BLACK = 4
         WHITE = 5
     End Enum
     
-    Private Const REG_UITHEME As String = "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\16.0\Common\UI Theme"
+    Private Const REG_UITHEME As String = "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\%VERSION%\Common\UI Theme"
                                                                                                                                         ' _
     ...................................................................................................                                 ' _
     :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -61,8 +61,12 @@
     Function ReadRegistry(ByVal Path As String) As Long
         
         Dim WshShell As Object
+        
+        Path = Replace(Path, "%VERSION%", Application.Version)
         Set WshShell = CreateObject("WScript.Shell")
         ReadRegistry = WshShell.RegRead(Path)
+        
+        Set WshShell = Nothing
     
     End Function
     
