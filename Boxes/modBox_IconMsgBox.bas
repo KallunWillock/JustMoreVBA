@@ -97,7 +97,7 @@ TODO:     Further customisation re: button labels                               
             Dim IconFilePath                            As String
 
             Title = "Title - IconMsgBox_Demo1"
-            Content = "Do you want to encrypt the selected files?" & vbNewLine & vbNewLine & "Consider the possibility that you will have no face or body and you are simply a thought, floating around the universe."
+            Content = "This is sample content." & vbNewLine & vbNewLine & "It demonstrates multiple lines in a messagebox."
             IconFilePath = "D:\discord.ico"
 
             Debug.Print IconMsgBox(Content, vbCritical + vbOKCancel + vbDefaultButton1, Title, IconFilePath, icn_imageres, 95)
