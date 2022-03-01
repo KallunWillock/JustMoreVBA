@@ -1,4 +1,4 @@
-Attribute VB_Name = "modTaskBox_Basic"
+Attribute VB_Name = "modBox_TaskBox"
                                                                                                                                                                                             ' _
     |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                                                                     ' _
     ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                                                                     ' _
@@ -16,9 +16,9 @@ Attribute VB_Name = "modTaskBox_Basic"
                                                                                                                                                                                             ' _
     TODO:     Further customisation re: icons and button labels?                                                                                                                            ' _
 
-    Option Explicit
-
     '   The TaskDialog allows for the standard system icons: Information, Question, Warning, Error
+    
+    Option Explicit
     
     Public Enum TDICONS
         TD_NO_ICON = 0                              '  No icon - MainInstruction and Contents against a white background
@@ -57,8 +57,6 @@ Attribute VB_Name = "modTaskBox_Basic"
         IDCLOSE = 8
     End Enum
     
-    Private Const IDPROMPT = &HFFFF&
-    
     '  HRESULT TaskDialog(
     '    HWND                           hwndOwner,
     '    HINSTANCE                      hInstance,
@@ -86,6 +84,8 @@ Attribute VB_Name = "modTaskBox_Basic"
         Dim dwIcon      As Long
       #End If
       
+        Const IDPROMPT = &HFFFF&
+      
         Dim pnButton    As Long
         Dim Result      As TDBUTTONS_RETURN_CODES
     
@@ -103,7 +103,7 @@ Attribute VB_Name = "modTaskBox_Basic"
         TaskBox = pnButton
     
     End Function
-
+    
     Sub TaskBox_Demo1()
         
         Dim Title               As String
@@ -120,7 +120,7 @@ Attribute VB_Name = "modTaskBox_Basic"
         Debug.Print Result
         
     End Sub
-
+    
     Sub TaskBox_Demo2()
         
         Dim Title               As String
@@ -180,5 +180,3 @@ Attribute VB_Name = "modTaskBox_Basic"
         End Select
         
     End Sub
-
-
