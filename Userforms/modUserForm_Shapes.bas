@@ -15,7 +15,7 @@
     NOTES:    To get the best result from adjusting the userform shape, remove the titlebar and border first - HideTitleBorder
 
     Private Declare PtrSafe Function FindWindow Lib "user32" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As LongPtr
-    Private Declare PtrSafe Function FindWindowEx Lib "user32" Alias "FindWindowExA" (ByVal hWnd1 As Long, ByVal hWnd2 As Long, ByVal lpsz1 As String, ByVal lpsz2 As String) As Long
+    Private Declare PtrSafe Function FindWindowEx Lib "user32" Alias "FindWindowExA" (ByVal hWnd1 As LongPtr, ByVal hWnd2 As LongPtr, ByVal lpsz1 As String, ByVal lpsz2 As String) As LongPtr
     
     Private Declare PtrSafe Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hwnd As LongPtr, ByVal nIndex As Long) As LongPtr
     Private Declare PtrSafe Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hwnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As LongPtr) As LongPtr
@@ -108,7 +108,7 @@
         
         Dim hWndForm        As LongPtr
         Dim DefinedRegion   As LongPtr
-        Dim PolyRegn(10)    As POINTAPI
+        Dim PolyShape(10)    As POINTAPI
 
         hWndForm = FindWindow("ThunderDFrame", UserformCaption)
         '   Load the Polygon shape data

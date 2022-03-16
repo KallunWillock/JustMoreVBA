@@ -10,7 +10,7 @@
                                                                                                                                           ' _
     AUTHOR:     Kallun Willock                                                                                                            ' _
     PURPOSE:    Collection of misc. procedures                                                                                            ' _
-                                                                                                                                          ' _
+    LICENSE:    MIT                                                                                                                                       ' _
     VERSION:    1.0         11/08/2021                                                                                                    ' _
                                                                                                                                           ' _
                                                                                                                                           ' _

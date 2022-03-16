@@ -1,19 +1,18 @@
-                                                                                                                                          ' _
-    :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::                                   ' _
-    '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''                                   ' _
-    |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                   ' _
-    ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                   ' _
-    ||||||||||||||||||||||||||              UI - THEMES              ||||||||||||||||||||||||||||||||||                                   ' _
-    ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                   ' _
-    |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                   ' _
-                                                                                                                                          ' _
-    AUTHOR:     Kallun Willock                                                                                                            ' _
-    PURPOSE:    Code to:    (1) engage the GetSysColor / SetSysColor APIs.                                                                ' _
-                            (2) check the registry to ascertain which UI mode the user has set Office products: dark grey, black, light   ' _
-                                                                                                                                          ' _
-    VERSION:    1.2         10/06/2021         Corrected these module details                                                             ' _
-                                                                                                                                          ' _
-    TODO:       VBIDE - port code for changes to colour palette/colour setting for VBIDE                                                  ' _
+
+                                                                                                                                                                                            ' _
+    |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                                                                     ' _
+    ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                                                                     ' _
+    ||||||||||||||||||||||||||              UI  - THEME              ||||||||||||||||||||||||||||||||||                                                                                     ' _
+    ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                                                                     ' _
+    |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                                                                     ' _
+                                                                                                                                                                                            ' _
+    AUTHOR:     Kallun Willock                                                                                                                                                              ' _
+    PURPOSE:    Code to:    (1) engage the GetSysColor / SetSysColor APIs.                                                                                                                  ' _
+                            (2) check the registry to ascertain which UI mode the user has set Office products: dark grey, black, light                                                     ' _
+    LICENSE:    MIT                                                                                                                                                                                         ' _
+    VERSION:    1.3         04/03/2022          Added code to change theme settings in the Registry for the VBIDE                                                                           ' _
+                1.2         10/06/2021          Corrected these module details                                                                                                              ' _
+                                                                                                                                                                                            ' _
 
     Option Explicit
     
@@ -25,14 +24,20 @@
         Private Declare Function SetSysColors Lib "user32" (ByVal nChanges As Long, lpSysColor As Long, lpColorValues As Long) As Long
     #End If
                                                                                 
-                                                                                
     Enum UITHEME
         DARKGREY = 3
         BLACK = 4
         WHITE = 5
     End Enum
     
-    Private Const REG_UITHEME As String = "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\%VERSION%\Common\UI Theme"
+    Private Const REG_BACKCOLOUR                As String = "HKEY_CURRENT_USER\Software\Microsoft\VBA\7.1\Common\CodeBackColors"
+    Private Const REG_FORECOLOUR                As String = "HKEY_CURRENT_USER\Software\Microsoft\VBA\7.1\Common\CodeForeColors"
+    Private Const BACKCOLOUR_DARK_THEME         As String = "4 0 4 7 6 4 4 4 11 4 0 0 0 0 0 0"
+    Private Const FORECOLOUR_DARK_THEME         As String = "1 0 5 14 1 9 11 15 4 1 0 0 0 0 0 0"
+    Private Const BACKCOLOUR_WHITE_THEME        As String = "0 0 0 7 6 0 0 0 0 0 0 0 0 0 0 0"
+    Private Const FORECOLOUR_WHITE_THEME        As String = "0 0 5 0 1 10 14 0 0 0 0 0 0 0 0 0"
+    
+    Private Const REG_UITHEME                   As String = "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\%VERSION%\Common\UI Theme"
                                                                                                                                         ' _
     ...................................................................................................                                 ' _
     :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -53,31 +58,58 @@
     Function IsTheme(ByVal Theme As UITHEME) As Boolean
         IsTheme = ReadRegistry(REG_UITHEME) = Theme
     End Function
-    
-    ' Procedure:    ReadRegistry
-    ' Purpose:      Generic function to check registry settings - late-binding
-    ' Returns:      Long
-    
-    Function ReadRegistry(ByVal Path As String) As Long
+
+    Sub ToggleThemeSettings()
         
-        Dim WshShell As Object
+        If ReadRegistry(REG_BACKCOLOUR) = BACKCOLOUR_WHITE_THEME Then
+            WriteRegistry REG_BACKCOLOUR, BACKCOLOUR_DARK_THEME, "REG_SZ"
+            WriteRegistry REG_FORECOLOUR, FORECOLOUR_DARK_THEME, "REG_SZ"
+        Else
+            WriteRegistry REG_BACKCOLOUR, BACKCOLOUR_WHITE_THEME, "REG_SZ"
+            WriteRegistry REG_FORECOLOUR, FORECOLOUR_WHITE_THEME, "REG_SZ"
+        End If
+    
+    End Sub
+
+    ' Procedure:    ReadRegistry / WriteRegistry
+    ' Purpose:      Generic function to read/write registry settings - late-binding
+    ' Returns:      Variant / NA
+    
+    Function ReadRegistry(ByVal RegPath As Variant) As Variant
         
-        Path = Replace(Path, "%VERSION%", Application.Version)
+        Dim WshShell    As Object
+            
+        If InStr(RegPath, "%VERSION%") Then
+            RegPath = Replace(RegPath, "%VERSION%", Application.Version)
+        End If
         Set WshShell = CreateObject("WScript.Shell")
-        ReadRegistry = WshShell.RegRead(Path)
+        ReadRegistry = WshShell.RegRead(RegPath)
         
         Set WshShell = Nothing
     
     End Function
     
+    Sub WriteRegistry(ByVal RegPath As Variant, ByVal RegValue As Variant, ByVal RegType As Variant)
+        
+        Dim WshShell    As Object
+        
+        Set WshShell = CreateObject("WScript.Shell")
+        WshShell.RegWrite RegPath, RegValue, RegType
+        
+        Set WshShell = Nothing
+    
+    End Sub
+    
     ' Procedures:   GenerateSystemColourList
     ' Purpose:      Output the current VBALong values of the spectrum of system colours. Useful to get default values.
     
     Sub GenerateSystemColourList()
-        Dim i As Long
+
+        Dim i           As Long
         For i = 0 To 20
             Debug.Print i, GetSysColor(i)
         Next
+
     End Sub
     
     Sub TestSetSysColours()
