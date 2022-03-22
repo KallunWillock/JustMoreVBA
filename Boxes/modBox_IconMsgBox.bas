@@ -1,8 +1,8 @@
-Attribute VB_Name = "modBox_IconMsgBox"
+
                                                                                                                                                                                             ' _
     |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                                                                     ' _
     ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                                                                     ' _
-    ||||||||||||||||||||||||||             ICONMSGBOX (v1.1)         ||||||||||||||||||||||||||||||||||                                                                                     ' _
+    ||||||||||||||||||||||||||             ICONMSGBOX (v1.2)         ||||||||||||||||||||||||||||||||||                                                                                     ' _
     ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                                                                     ' _
     |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                                                                     ' _
                                                                                                                                                                                             ' _
@@ -10,7 +10,8 @@ Attribute VB_Name = "modBox_IconMsgBox"
     PURPOSE:  The IconMsgBox is a Unicode-enabled MessageBox that can display a custom icon (ICO file).                                                                                     ' _
               It also features a timeout feature resulting in it closing down after a designated period of time.                                                                            ' _
     LICENSE:  MIT                                                                                                                                                                           ' _
-    VERSION:  1.1        16/03/2022         Added timeout functiontionality. Improved comments and corrected errors.                                                                        ' _
+    VERSION:  1.2        22/03/2022         Improved timeout functiontionality. Fixed 32-bit compatibiility.                                                                                ' _
+              1.1        16/03/2022         Added timeout functiontionality. Improved comments and corrected errors.                                                                        ' _
               1.0        18/02/2022         Version 1 uploaded to Github. Compatible with 32-bit and 64-bit Office                                                                          ' _
                                                                                                                                                                                             ' _
     NOTES:    A return value of 32000 indicates that the user did not press a button.                                                                                                       ' _
@@ -19,14 +20,14 @@ Attribute VB_Name = "modBox_IconMsgBox"
               [x] Allow use of custom ICO files                                                                                                                                             ' _
               [x] Unicode compatibility                                                                                                                                                     ' _
               [x] Add timeout feature                                                                                                                                                       ' _
-              [ ] Custom buttons labels?
+              [ ] Custom button labels?
 
             Option Explicit
 
             Public Enum ImageDLL
-                icn_shell32
+                icn_shell32                 '        C:\Windows\System32\shell32.dll                - 329   icons
                 icn_imageres
-                icn_accessibilitycpl
+                icn_accessibilitycpl        '        C:\Windows\System32\accessibilitycpl.dll       - 24    icons
                 icn_ddores
                 icn_moricons
                 icn_pifmgr
@@ -39,8 +40,6 @@ Attribute VB_Name = "modBox_IconMsgBox"
                 icn_pnidui
                 icn_sensorscpl
             End Enum
-        
-        '        C:\Windows\System32\accessibilitycpl.dll       - 24    icons
         '        C:\Windows\System32\ActionCenterCPL.dll        - 7     icons
         '        C:\Windows\System32\mshtml.dll                 - 27    icons
         '        C:\Windows\System32\taskbarcpl.dll             - 15    icons
@@ -55,8 +54,8 @@ Attribute VB_Name = "modBox_IconMsgBox"
         '        C:\Windows\System32\fvecpl.dll                 - 1     icon
         '        C:\Windows\System32\werconcpl.dll              - 5     icons
         '        C:\Windows\System32\user32.dll                 - 7     icons
-        '        C:\Windows\System32\shell32.dll                - 329   icons
         
+                        
             #If VBA7 Then
 
                 Private Declare PtrSafe Function CallNextHookEx Lib "user32" (ByVal hHook As LongPtr, ByVal nCode As Long, ByVal wParam As LongPtr, lParam As Any) As LongPtr
@@ -71,9 +70,9 @@ Attribute VB_Name = "modBox_IconMsgBox"
                 Private Declare PtrSafe Function SetWindowsHookEx Lib "user32" Alias "SetWindowsHookExA" (ByVal idHook As Long, ByVal lpfn As LongPtr, ByVal hmod As LongPtr, ByVal dwThreadId As Long) As LongPtr
                 Private Declare PtrSafe Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As LongPtr) As Long
 
-                Private pHook As LongPtr
-                Private hIcon As LongPtr
-
+                Private pHook                               As LongPtr
+                Private hIcon                               As LongPtr
+                Private hIconWnd                            As LongPtr
             #Else
 
                 Private Declare Function CallNextHookEx Lib "user32" (ByVal hHook As Long, ByVal CodeNo As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
@@ -88,8 +87,9 @@ Attribute VB_Name = "modBox_IconMsgBox"
                 Private Declare Function SetWindowsHookEx Lib "user32" Alias "SetWindowsHookExA" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hmod As Long, ByVal dwThreadID As Long) As Long
                 Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) As Long
 
-                Private pHook As Long
-                Private hIcon As Long
+                Private pHook                               As Long
+                Private hIcon                               As Long
+                Private hIconWnd                            As Long
 
             #End If
             
@@ -97,22 +97,36 @@ Attribute VB_Name = "modBox_IconMsgBox"
             Private Const HCBT_ACTIVATE                     As Long = &H5
             Private Const STM_SETICON                       As Long = &H170
             Private Const MSGBOX_CLASSNAME                  As String = "#32770"
-
+            Private Const MB_SETFOREGROUND                  As Long = &H10000
+            Private Const MB_TOPMOST                        As Long = &H40000
+            Private Const MB_RIGHT                          As Long = &H80000
+            Private Const MB_RTLREADING                     As Long = &H100000
+            
             Sub IconMsgBox_Demo1()
 
                 Dim Content                                 As String
-                Dim Title                                   As String
+                Dim Title                                   As String * 60
                 Dim IconFilePath                            As String
 
                 Title = "Title - IconMsgBox_Demo1"
-                Content = "Is this a useless example question?" & vbNewLine & vbNewLine & "Anything is better than the previous example, OK? This will timeout in 5 seconds."
-                IconFilePath = "D:\discord1.ico"
-
-                Debug.Print IconMsgBox(Content, vbQuestion + vbYesNo + vbDefaultButton1, Title, IconFilePath, icn_imageres, 25, 10000)
+                Content = "This msgbox routine allows for:" & vbNewLine & vbNewLine & "1. Custom icons" & vbNewLine & "2. Unicode text"
+                Content = Content & vbNewLine & "3. (now) a timeout feature"
+                
+                ' MsgBox with a 10 second timeout - Unicode compatible - uses icon#189 of the ImageRes.DLL
+                Debug.Print IconMsgBox(Content, vbYesNo, Title, IconFilePath, icn_imageres, 189, 10000)
 
             End Sub
 
-            Public Function IconMsgBox(ByVal Content As String, Optional ByVal Style As VbMsgBoxStyle = vbOKOnly, Optional ByVal Title As String = "", Optional ByVal IconFilePath As String, Optional ByVal IconLibrary As ImageDLL, Optional ByVal IconNumber As Long = 0, Optional TimeOut As Long = -1, Optional BeepNotification As Boolean = False) As VbMsgBoxResult
+            Public Function IconMsgBox(ByVal Content As String, _
+                              Optional ByVal Style As VbMsgBoxStyle = vbOKOnly, _
+                              Optional ByVal Title As String = "", _
+                              Optional ByVal IconFilePath As String, _
+                              Optional ByVal IconLibrary As ImageDLL, _
+                              Optional ByVal IconNumber As Long = 0, _
+                              Optional ByVal TimeOut As Long = -1, _
+                              Optional ByVal RightToLeft As Boolean = False, _
+                              Optional ByVal BeepNotification As Boolean = False, _
+                              Optional ByVal RightJustified As Boolean = False) As VbMsgBoxResult
 
                 Dim IconPath                                As String
                 Dim TargetThreadID                          As Long
@@ -121,12 +135,10 @@ Attribute VB_Name = "modBox_IconMsgBox"
                 
                 If IconFilePath = vbNullString Then
                     Dim ImageLibraryPaths                   As Variant
-                    ImageLibraryPaths = Array("C:\WINDOWS\System32\shell32.dll", "C:\Windows\system32\imageres.dll", _
-                                              "C:\Windows\system32\pifmgr.dll", "C:\Windows\system32\accessibilitycpl.dll", _
-                                              "C:\Windows\system32\ddores.dll", "C:\Windows\system32\moricons.dll", _
-                                              "C:\windows\explorer.exe", "C:\windows\system32\mmcndmgr.dll", _
-                                              "C:\windows\system32\mmres.dll", "C:\windows\system32\netcenter.dll", _
-                                              "C:\windows\system32\netshell.dll", "C:\windows\system32\networkexplorer.dll", _
+                    ImageLibraryPaths = Array("C:\WINDOWS\System32\shell32.dll", "C:\Windows\system32\imageres.dll", "C:\Windows\system32\pifmgr.dll", _
+                                              "C:\Windows\system32\accessibilitycpl.dll", "C:\Windows\system32\ddores.dll", "C:\Windows\system32\moricons.dll", _
+                                              "C:\windows\explorer.exe", "C:\windows\system32\mmcndmgr.dll", "C:\windows\system32\mmres.dll", _
+                                              "C:\windows\system32\netcenter.dll", "C:\windows\system32\netshell.dll", "C:\windows\system32\networkexplorer.dll", _
                                               "C:\windows\system32\pnidui.dll", "C:\windows\system32\sensorscpl.dll")
 
                     IconPath = ImageLibraryPaths(IconLibrary)
@@ -137,8 +149,9 @@ Attribute VB_Name = "modBox_IconMsgBox"
 
                 hIcon = ExtractIcon(0&, IconPath, IconNumber)
                 
-                If BeepNotification = True Then Style = Style - vbCritical
-                
+                If hIcon <> 0 Then Style = Style Or vbQuestion
+                Style = Style - vbCritical + MB_TOPMOST
+                                
                 If TimeOut < 60 Then TimeOut = TimeOut * 1000
                 
                 TargetThreadID = GetCurrentThreadId()
@@ -158,8 +171,7 @@ Attribute VB_Name = "modBox_IconMsgBox"
 
                 Dim ClassNameSize                           As Long
                 Dim CurrWindowClassName                     As String
-                Dim hIconWnd                                As LongPtr
-
+                
               ' Hook the process
                 MsgBoxHookProc = CallNextHookEx(pHook, CodeNo, wParam, lParam)
 
@@ -172,7 +184,7 @@ Attribute VB_Name = "modBox_IconMsgBox"
                     If Left(CurrWindowClassName, ClassNameSize) <> MSGBOX_CLASSNAME Then Exit Function
                    
                   ' If phIcon has been assigned a pointer then get the handle for the STATIC control (which houses the icon), and then
-                  ' assign that icon to the msgbox with SendMessage - STM_SETICON
+                  ' use assign that icon to the msgbox with SendMessage - STM_SETICON
                   
                     If hIcon <> 0 Then
                         hIconWnd = FindWindowEx(wParam, 0^, "Static", vbNullString)
