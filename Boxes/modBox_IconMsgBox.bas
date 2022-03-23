@@ -178,12 +178,12 @@
                 If CodeNo = HCBT_ACTIVATE Then
                     CurrWindowClassName = Space(32)
                    
-                  ' This function call will populate both the CurrWindowClassName and ClassNameSize variables:- 6 and #32770 respectively
+                  ' This function call will populate both the CurrWindowClassName and ClassNameSize variables:- #32770 and 6 respectively
                     ClassNameSize = GetClassName(wParam, CurrWindowClassName, 32)
                    
                     If Left(CurrWindowClassName, ClassNameSize) <> MSGBOX_CLASSNAME Then Exit Function
                    
-                  ' If phIcon has been assigned a pointer then get the handle for the STATIC control (which houses the icon), and then
+                  ' If hIcon has been assigned a pointer then get the handle for the STATIC control (which houses the icon), and then
                   ' use assign that icon to the msgbox with SendMessage - STM_SETICON
                   
                     If hIcon <> 0 Then
