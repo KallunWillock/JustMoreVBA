@@ -10,10 +10,9 @@ Attribute VB_Name = "modGDIP_LoadPicture"
     AUTHOR:   Stephen Bullen / Rob Bovey                                                                                                                                                    ' _
     PURPOSE:  A method to load PNG files (including those with an alpha channel) into VBA controls                                                                                          ' _
                                                                                                                                                                                             ' _
-    VERSION:  1.0        31/10/2006         S. Bullen                                                                                                                                       ' _
+    VERSION:  1.2        01/12/2021         Updated code to apply a background colour to alpha channel                                                                                      ' _
               1.1        30/12/2010         R. Bovey - added code to make compatible with 64bit office                                                                                      ' _
-              1.2        01/12/2021         Updated code to apply a background colour to alpha channel                                                                                      ' _
-
+              1.0        31/10/2006         S. Bullen                                                                                                                                       ' _
 
     'This module provides a LoadPictureGDI function, which can
     'be used instead of VBA's LoadPicture, to load a wide variety
