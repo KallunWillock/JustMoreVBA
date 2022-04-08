@@ -50,7 +50,7 @@ Attribute VB_Name = "modImages_WIA_EXIF"
         VectorOfRationalsImagePropertyType = 1105
         VectorOfUnsignedRationalsImagePropertyType = 1106
     End Enum
-    
+    ' Sample image: https://github.com/KallunWillock/JustMoreVBA/raw/main/Images/pexels-jill-evans-11567527.jpg
     Const TargetFileName = "C:\PATHTOFILE\pexels-jill-evans-11567527.jpg"
     
     Sub Test_WriteProperties()
