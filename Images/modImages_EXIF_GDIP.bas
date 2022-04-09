@@ -2,11 +2,11 @@
                                                                                                                                                                                             ' _
     |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                                                                     ' _
     ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                                                                     ' _
-    ||||||||||||||||||||||||||        IMAGES - EXIF PROPERTIES       ||||||||||||||||||||||||||||||||||                                                                                     ' _
+    ||||||||||||||||||||||||||      EXIF PROPERTIES  (GDIP)          ||||||||||||||||||||||||||||||||||                                                                                     ' _
     ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                                                                     ' _
     |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                                                                     ' _
                                                                                                                                                                                             ' _
-    AUTHOR:   Daniel Pineault   (64-bit compatibility added by K. Willock)                                                                                                                   ' _
+    AUTHOR:   Daniel Pineault   (64-bit conversion / compatibility added by K. Willock)                                                                                                     ' _
     PURPOSE:  GDI+ routines to read and write EXIF properties to JPG image files.                                                                                                           ' _
     LICENSE:  Attribution-ShareAlike 4.0 International                                                                                                                                      ' _
               (CC BY-SA 4.0) - https://creativecommons.org/licenses/by-sa/4.0/                                                                                                              ' _
@@ -26,7 +26,7 @@
     'API Declarations, ENUMS, TYPES, Global Variables, ...
     '-------------------------------------------------------------------------------
     '-------------------------------------------------------------------------------
-    Private Const GdiplusVersion  As Long = 1
+    Private Const GdiplusVersion As Long = 1
      
     Private Const ImageCodecBMP = "{557CF400-1A04-11D3-9A73-0000F81EF32E}"
     Private Const ImageCodecGIF = "{557CF402-1A04-11D3-9A73-0000F81EF32E}"
