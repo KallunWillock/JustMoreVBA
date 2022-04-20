@@ -178,6 +178,7 @@
         
         SetSysColors CHANGE_INDEX, COLOR_HIGHLIGHT, vbYellow
         SetSysColors CHANGE_INDEX, COLOR_HIGHLIGHTTEXT, vbBlack
+        
     End Sub
 
 
