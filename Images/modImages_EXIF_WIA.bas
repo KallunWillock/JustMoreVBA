@@ -1,30 +1,30 @@
 
-  																					       ' _
-   |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                                                         ' _
-   ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                                                         ' _
-   ||||||||||||||||||||||||||      EXIF PROPERTIES  (WIA) V1.1      ||||||||||||||||||||||||||||||||||                                                                         ' _
-   ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                                                         ' _
-   |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                                                         ' _
-															         					       ' _
-   AUTHOR:   Dan_W and Kallun Willock                                                                     							               ' _
-   PURPOSE:  Routines to read and write EXIF properties to JPG image files using                                                                                               ' _
-             the Windows Image Acquisition (WIA) COM Object.									 					       ' _
+  																					                                                                                            ' _
+   |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                                                          ' _
+   ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                                                          ' _
+   ||||||||||||||||||||||||||      EXIF PROPERTIES  (WIA) V1.1      ||||||||||||||||||||||||||||||||||                                                                          ' _
+   ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                                                          ' _
+   |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                                                          ' _
+															         					                                                                                        ' _
+   AUTHOR:   Dan_W and Kallun Willock                                                                     							                                            ' _
+   PURPOSE:  Routines to read and write EXIF properties to JPG image files using                                                                                                ' _
+             the Windows Image Acquisition (WIA) COM Object.									 					                                                            ' _
    LICENSE:  MIT
-																 	         	         	       ' _
-   VERSION:  1.1   09/04/2022      Added 400+ additional EXIF MetaData Property Tags; New subroutine                                                                           ' _
-                                   to load table of EXIF MetaData Properites (EXIFTOOL.ORG) for easy reference                   	         	         	       ' _
-             1.0   25/03/2022      Completed code for OP -  									 	         	         	       ' _
+																 	         	         	                                                                                    ' _
+   VERSION:  1.1   09/04/2022      Added 400+ additional EXIF MetaData Property Tags; New subroutine                                                                            ' _
+                                   to load table of EXIF MetaData Properites (EXIFTOOL.ORG) for easy reference                   	         	         	                    ' _
+             1.0   25/03/2022      Completed code for OP -  									 	         	         	                                                    ' _
                                    https://www.mrexcel.com/board/threads/using-a-userform-to-change-the-document-properties-or-tags.1198206/
-																                                               ' _
-   USAGE:             									                                                                                       ' _
-             WriteEXIFData Filename, PropertyName, PropertyValue, (Opt) WriteOverOriginal = True, (Opt) CreateBackup             					       ' _
-             - WriteEXIFData "C:\Temp\IMG01 - Copy.jpg", EXIFImageTitle, "New Image Title"                                                                                     ' _
-             - WriteEXIFData "C:\Temp\IMG01 - Copy.jpg", EXIFImageTitle, "Live Life On The Edge", True                                                                         ' _
-															         					       ' _
+																                                                                                                                ' _
+   USAGE:             									                                                                                                                        ' _
+             WriteEXIFData Filename, PropertyName, PropertyValue, (Opt) WriteOverOriginal = True, (Opt) CreateBackup             					                            ' _
+             - WriteEXIFData "C:\Temp\IMG01 - Copy.jpg", EXIFImageTitle, "New Image Title"                                                                                      ' _
+             - WriteEXIFData "C:\Temp\IMG01 - Copy.jpg", EXIFImageTitle, "Live Life On The Edge", True                                                                          ' _
+															         					                                                                                        ' _
              - Comments = GetEXIFData("C:\Temp\IMG_20210508_170154.jpg", EXIFImageComments)
                                                          
    Option Explicit
-												                                                                     	        ' _
+												                                                                     	                                                        ' _
        Property Descriptions sourced from                                                                                                                                     	' _
        https://docs.microsoft.com/en-us/windows/win32/gdiplus/-gdiplus-constant-property-item-descriptions
    
