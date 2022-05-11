@@ -29,8 +29,8 @@ Attribute VB_Name = "modBox_IconMsgBox"
               [X] Unicode compatibility                        [X] Add unicode conversion compatibility                                                                                     ' _
               [X] Add timeout feature                          [X] Custom button labels                                                                                                     ' _
               [X] RTL Support                                                                                                                                                               ' _
-              [ ] ?                                                                                                                                                                         ' _
-                                                                                                                                                                                            ' _
+              [ ] Can make use of a fourth button if use the MessageBoxIndirect API:                                                                                                        ' _
+                  https://www.codeproject.com/Articles/562/Add-a-Help-Button-to-a-MessageBox  
 
     Option Explicit
 
