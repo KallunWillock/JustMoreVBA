@@ -1,23 +1,22 @@
 Attribute VB_Name = "modBox_TaskBox"
-                                                                                                                                                                                            ' _
-    |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                                                                     ' _
-    ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                                                                     ' _
-    ||||||||||||||||||||||||||              TASKBOX (v1)             ||||||||||||||||||||||||||||||||||                                                                                     ' _
-    ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                                                                     ' _
-    |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                                                                     ' _
-                                                                                                                                                                                            ' _
-    AUTHOR:   Kallun Willock                                                                                                                                                                ' _
-    PURPOSE:  A basic implementation of the TaskDialog, here referred to as the TaskBox.                                                                                                    ' _
-    LICENSE:  MIT                                                                                                                                                                           ' _
-    VERSION:  1.0        18/02/2022         Version 1 uploaded to Github. Compatible with 32-bit and 64-bit Office                                                                          ' _
-                                                                                                                                                                                            ' _
-    NOTES:    See following for VB6 (32-bit) implementation of TaskDialogIndirect (which provides broader scope for customisation):                                                         ' _
-              https://www.vbforums.com/showthread.php?777021-VB6-TaskDialogIndirect-Complete-class-implementation-of-Vista-Task-Dialogs                                                     ' _
-                                                                                                                                                                                            ' _
-    TODO:     Further customisation re: icons and button labels?                                                                                                                            ' _
+                                                                                                                                                                                                                            ' _
+    |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                                                                                                     ' _
+    ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                                                                                                     ' _
+    ||||||||||||||||||||||||||              TASKBOX (v1.1)           ||||||||||||||||||||||||||||||||||                                                                                                                     ' _
+    ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                                                                                                     ' _
+    |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                                                                                                     ' _
+                                                                                                                                                                                                                            ' _
+    AUTHOR:   Kallun Willock                                                                                                                                                                                                ' _
+    PURPOSE:  A basic implementation of the TaskDialog, here referred to as the TaskBox.                                                                                                                                    ' _
+    LICENSE:  MIT                                                                                                                                                                                                           ' _
+    VERSION:  1.1        07/04/2022         Improved support for Unicode text.                                                                                                                                              ' _
+              1.0        18/02/2022         Version 1 uploaded to Github. Compatible with 32-bit and 64-bit Office                                                                                                          ' _
+                                                                                                                                                                                                                            ' _
+    NOTES:    See following for VB6 (32-bit) implementation of TaskDialogIndirect (which provides broader scope for customisation):                                                                                         ' _
+              https://www.vbforums.com/showthread.php?777021-VB6-TaskDialogIndirect-Complete-class-implementation-of-Vista-Task-Dialogs                                                                                     ' _
 
     '   The TaskDialog allows for the standard system icons: Information, Question, Warning, Error
-    
+                                                                                                                                
     Option Explicit
     
     Public Enum TDICONS
@@ -57,6 +56,7 @@ Attribute VB_Name = "modBox_TaskBox"
         IDCLOSE = 8
     End Enum
     
+    Const IDPROMPT = &HFFFF&
     '  HRESULT TaskDialog(
     '    HWND                           hwndOwner,
     '    HINSTANCE                      hInstance,
@@ -73,37 +73,13 @@ Attribute VB_Name = "modBox_TaskBox"
     #Else
         Private Declare Function TaskDialog Lib "comctl32.dll" (ByVal hwndParent As Long, ByVal hInstance As Long, ByVal pszWindowTitle As Long, ByVal pszMainInstruction As Long, ByVal pszContent As Long, ByVal dwCommonButtons As Long, ByVal pszIcon As Long, pnButton As Long) As Long
     #End If
- 
-    Public Function TaskBox(TaskBoxMainInstruction As String, TaskBoxContent As String, Optional TaskBoxTitle As String = " ", Optional dwButtons As TDBUTTONS = TDCBF_OK_BUTTON, Optional lIcon As TDICONS = TD_SHIELD_GRADIENT_ICON) As TDBUTTONS
-      
-      #If Win64 Then
-        Dim hWndParent  As LongPtr
-        Dim dwIcon      As LongPtr
-      #Else
-        Dim hWndParent  As Long
-        Dim dwIcon      As Long
-      #End If
-      
-        Const IDPROMPT = &HFFFF&
-      
-        Dim pnButton    As Long
-        Dim Result      As TDBUTTONS_RETURN_CODES
-    
-        '  Make the IntResource
-        
-        dwIcon = IDPROMPT And lIcon
-        
-        '  From MSDN: "If you create a task dialog while a dialog box is present, use a handle to the dialog box as the hWndParent parameter.
-        '              The hWndParent parameter should not identify a child window, such as a control in a dialog box."
-        
-        hWndParent = Application.hwnd
-    
-        Result = TaskDialog(hWndParent, 0&, StrPtr(TaskBoxTitle), StrPtr(TaskBoxMainInstruction), StrPtr(TaskBoxContent), dwButtons, dwIcon, pnButton)
-    
-        TaskBox = pnButton
-    
-    End Function
-    
+
+'      :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'                                           DEMO ROUTINES
+
+'      ...................................................................................................
+
     Sub TaskBox_Demo1()
         
         Dim Title               As String
@@ -180,3 +156,84 @@ Attribute VB_Name = "modBox_TaskBox"
         End Select
         
     End Sub
+
+
+'      :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'                                    MAIN TASKBOX ROUTINE
+
+'      ...................................................................................................
+
+    Public Function TaskBox(ByVal TaskBoxMainInstruction As String, TaskBoxContent As String, Optional ByVal TaskBoxTitle As String = " ", Optional ByVal dwButtons As TDBUTTONS = TDCBF_OK_BUTTON, Optional ByVal lIcon As TDICONS = TD_SHIELD_GRADIENT_ICON) As TDBUTTONS
+
+      #If Win64 Then
+        Dim hWndParent  As LongPtr
+        Dim dwIcon      As LongPtr
+      #Else
+        Dim hWndParent  As Long
+        Dim dwIcon      As Long
+      #End If
+      
+        Dim pnButton    As Long
+        Dim Result      As TDBUTTONS_RETURN_CODES
+    
+        '  Make the IntResource
+        
+        dwIcon = IDPROMPT And lIcon
+        
+        '  From MSDN: "If you create a task dialog while a dialog box is present, use a handle to the dialog box as the hWndParent parameter.
+        '              The hWndParent parameter should not identify a child window, such as a control in a dialog box."
+        
+        hWndParent = Application.hWnd
+    
+        Result = TaskDialog(hWndParent, 0&, StrPtr(TaskBoxTitle), StrPtr(TaskBoxMainInstruction), StrPtr(TaskBoxContent), dwButtons, dwIcon, pnButton)
+    
+        TaskBox = pnButton
+    
+    End Function
+
+'      :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'                                    HELPER FUNCTIONS
+
+'      ...................................................................................................
+    
+    Private Function GetUnicodeMessage(ByVal UnicodeCharacters As Variant) As String
+    
+        Dim Counter                                 As Long
+        Dim TempMessage                             As String
+        
+        If IsArray(UnicodeCharacters) = False Then UnicodeCharacters = Array(UnicodeCharacters)
+        
+        For Counter = LBound(UnicodeCharacters) To UBound(UnicodeCharacters)
+            TempMessage = TempMessage & UnicodeConverter(UnicodeCharacters(Counter))
+        Next
+        
+        GetUnicodeMessage = TempMessage
+        
+    End Function
+    
+    Private Function UnicodeConverter(ByVal Code As Variant) As String
+        
+        If IsNumeric(Code) = False Then
+            If Left(Code, 2) = "U+" Then
+                Code = CLng(Replace(Code, "U+", "&H"))
+            ElseIf Left(Code, 2) = "0x" Then
+                Code = CLng(Replace(Code, "0x", "&H"))
+            Else
+                Code = CLng("&H" & Code)
+            End If
+        End If
+        
+        ' Conversion algorithm below partially based on code by GSerg at
+        ' https://stackoverflow.com/questions/57158679/alternative-of-chrw-function
+        ' Revised to allow for negative values (see Demo2, comma) | Sourced: 07/04/2022
+        If (Code >= &H8000 And Code <= &HD7FF&) Or (Code >= &HE000& And Code <= &HFFFF&) Then
+            UnicodeConverter = ChrW(Code)
+        Else
+            Code = Code - &H10000
+            UnicodeConverter = ChrW(&HD800 Or (Code \ &H400&)) & ChrW(&HDC00 Or (Code And &H3FF&))
+        End If
+        
+    End Function
+
