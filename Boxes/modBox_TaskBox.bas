@@ -2,14 +2,15 @@ Attribute VB_Name = "modBox_TaskBox"
                                                                                                                                                                                                                             ' _
     |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                                                                                                     ' _
     ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                                                                                                     ' _
-    ||||||||||||||||||||||||||              TASKBOX (v1.1)           ||||||||||||||||||||||||||||||||||                                                                                                                     ' _
+    ||||||||||||||||||||||||||              TASKBOX (v1.2)           ||||||||||||||||||||||||||||||||||                                                                                                                     ' _
     ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                                                                                                     ' _
     |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                                                                                                     ' _
                                                                                                                                                                                                                             ' _
     AUTHOR:   Kallun Willock                                                                                                                                                                                                ' _
     PURPOSE:  A basic implementation of the TaskDialog, here referred to as the TaskBox.                                                                                                                                    ' _
     LICENSE:  MIT                                                                                                                                                                                                           ' _
-    VERSION:  1.1        07/04/2022         Improved support for Unicode text.                                                                                                                                              ' _
+    VERSION:  1.2        15/06/2022         Various amendments and addition of further example                                                                                                                              ' _
+              1.1        07/04/2022         Improved support for Unicode text.                                                                                                                                              ' _
               1.0        18/02/2022         Version 1 uploaded to Github. Compatible with 32-bit and 64-bit Office                                                                                                          ' _
                                                                                                                                                                                                                             ' _
     NOTES:    See following for VB6 (32-bit) implementation of TaskDialogIndirect (which provides broader scope for customisation):                                                                                         ' _
@@ -56,7 +57,6 @@ Attribute VB_Name = "modBox_TaskBox"
         IDCLOSE = 8
     End Enum
     
-    Const IDPROMPT = &HFFFF&
     '  HRESULT TaskDialog(
     '    HWND                           hwndOwner,
     '    HINSTANCE                      hInstance,
@@ -128,12 +128,15 @@ Attribute VB_Name = "modBox_TaskBox"
         MainInstruction = "Do you want to proceed?"
         Content = "Please confirm whether or not you would like to proceed to the next stage of the application process."
         
-        Result = TaskBox(MainInstruction, Content, Title, TDBUTTONS.TDCBF_YES_BUTTON Or TDBUTTONS.TDCBF_NO_BUTTON, TDICONS.TD_SHIELD_GRAY_ICON)
+        Result = TaskBox(MainInstruction, _
+                         Content, Title, TDBUTTONS.TDCBF_YES_BUTTON Or TDBUTTONS.TDCBF_NO_BUTTON, TDICONS.TD_SHIELD_GRAY_ICON)
         
         Select Case Result
             Case TDBUTTONS_RETURN_CODES.IDYES
                 
-                SecondResult = TaskBox("Proceed to next stage...", "You confirmed that you would like to proceed to the next stage of the application process.", Title, TDBUTTONS.TDCBF_OK_BUTTON, TDICONS.TD_SHIELD_OK_ICON)
+                SecondResult = TaskBox("Proceed to next stage...", _
+                                       "You confirmed that you would like to proceed to the next stage of the application process.", _
+                                       Title, TDBUTTONS.TDCBF_OK_BUTTON, TDICONS.TD_SHIELD_OK_ICON)
             
             Case TDBUTTONS_RETURN_CODES.IDNO
                 
@@ -141,7 +144,13 @@ Attribute VB_Name = "modBox_TaskBox"
                 ' Close button to be first, but on the screen, the first button is retry and the second is close. The buttons will
                 ' be always be presented in a certain order (see the order set out above in the enumerations).
                 
-                SecondResult = TaskBox("Withdraw application", "You responded that you do not wish to continue with the application process." & vbNewLine & vbNewLine & "Please note that unless you elect to retry making an application by selecting 'Retry' below, your application will be closed.", Title, TDBUTTONS.TDCBF_CLOSE_BUTTON Or TDBUTTONS.TDCBF_RETRY_BUTTON, TDICONS.TD_SHIELD_WARNING_ICON)
+                SecondResult = TaskBox("Withdraw application", _
+                                       "You responded that you do not wish to continue with the application process." & _
+                                       vbNewLine & vbNewLine & "Please note that unless you elect to retry making an" & _
+                                       " application by selecting 'Retry' below, your application will be closed.", _
+                                       Title, _
+                                       TDBUTTONS.TDCBF_CLOSE_BUTTON Or TDBUTTONS.TDCBF_RETRY_BUTTON, _
+                                       TDICONS.TD_SHIELD_WARNING_ICON)
                 
                 If SecondResult = TDBUTTONS_RETURN_CODES.IDRETRY Then
                     
@@ -157,28 +166,46 @@ Attribute VB_Name = "modBox_TaskBox"
         
     End Sub
 
-
+    Sub TaskBox_Demo4()
+        
+        Dim Title               As String
+        Dim MainInstruction     As String
+        Dim Result              As TDBUTTONS_RETURN_CODES
+            
+        Title = "Title - TaskBox_Demo4"
+        MainInstruction = "As an alternative, the entirety of the content can be displayed as the Main Instruction."
+        MainInstruction = MainInstruction & vbNewLine & vbNewLine & "This would give the appearance of a larger font messagebox."
+        
+        Result = TaskBox(MainInstruction, , Title, TDBUTTONS.TDCBF_OK_BUTTON, TD_NO_ICON)
+        
+        Debug.Print Result
+        
+    End Sub
 '      :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '                                    MAIN TASKBOX ROUTINE
 
 '      ...................................................................................................
 
-    Public Function TaskBox(ByVal TaskBoxMainInstruction As String, TaskBoxContent As String, Optional ByVal TaskBoxTitle As String = " ", Optional ByVal dwButtons As TDBUTTONS = TDCBF_OK_BUTTON, Optional ByVal lIcon As TDICONS = TD_SHIELD_GRADIENT_ICON) As TDBUTTONS
+    Public Function TaskBox(ByVal TaskBoxMainInstruction As String, Optional TaskBoxContent As String = "", _
+                            Optional ByVal TaskBoxTitle As String = " ", _
+                            Optional ByVal dwButtons As TDBUTTONS = TDCBF_OK_BUTTON, _
+                            Optional ByVal lIcon As TDICONS = TD_SHIELD_GRADIENT_ICON) As TDBUTTONS
 
       #If Win64 Then
-        Dim hWndParent  As LongPtr
-        Dim dwIcon      As LongPtr
+        Dim hWndParent          As LongPtr
+        Dim dwIcon              As LongPtr
       #Else
-        Dim hWndParent  As Long
-        Dim dwIcon      As Long
+        Dim hWndParent          As Long
+        Dim dwIcon              As Long
       #End If
       
-        Dim pnButton    As Long
-        Dim Result      As TDBUTTONS_RETURN_CODES
-    
-        '  Make the IntResource
+        Dim pnButton            As Long
+        Dim Result              As TDBUTTONS_RETURN_CODES
         
+        Const IDPROMPT          As Long = &HFFFF&
+        
+        '  Make the IntResource
         dwIcon = IDPROMPT And lIcon
         
         '  From MSDN: "If you create a task dialog while a dialog box is present, use a handle to the dialog box as the hWndParent parameter.
@@ -200,8 +227,8 @@ Attribute VB_Name = "modBox_TaskBox"
     
     Private Function GetUnicodeMessage(ByVal UnicodeCharacters As Variant) As String
     
-        Dim Counter                                 As Long
-        Dim TempMessage                             As String
+        Dim Counter             As Long
+        Dim TempMessage         As String
         
         If IsArray(UnicodeCharacters) = False Then UnicodeCharacters = Array(UnicodeCharacters)
         

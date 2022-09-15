@@ -36,6 +36,8 @@
     
     Function IMAGE(TargetURL As String, Optional ImageMode As ImageModeEnum = 3, Optional CustomHeight As Long = -1, Optional CustomWidth As Long = -1)
         
+        Application.Volatile
+        
         Dim TargetCell As Range, Img As Object
         Dim CallerCell As Variant, TargetFileName As String
         
@@ -85,8 +87,8 @@
     End Function
     
     Private Function DownloadFile(ByVal SourceURL As String, ByVal LocalFile As String) As Boolean
-       
-       DownloadFile = URLDownloadToFile(0&, SourceURL, LocalFile, BINDF_GETNEWESTVERSION, 0&) = ERROR_SUCCESS
+
+        DownloadFile = URLDownloadToFile(0&, SourceURL, LocalFile, BINDF_GETNEWESTVERSION, 0&) = ERROR_SUCCESS
     
     End Function
     

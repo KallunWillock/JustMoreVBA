@@ -67,3 +67,8 @@ Function GETPATH(FILENAME As String) As String
     GETPATH = Replace(FSO.GetAbsolutePathName(FILENAME), FSO.GETFILENAME(FILENAME), "", , , vbTextCompare)
     Set FSO = Nothing
 End Function
+
+'  Accss-specific procedures
+Function PathSeparator() As String
+    PathSeparator = Replace(Replace(Application.CurrentDb.Name, Application.CodeProject.Path, vbNullString), Application.CodeProject.Name, vbNullString)
+End Function 

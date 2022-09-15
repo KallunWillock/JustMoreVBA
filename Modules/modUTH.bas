@@ -40,11 +40,11 @@
     End Sub
 
     Sub Pause(Period As Single)
-        Dim TimeNow As Single
-        TimeNow = Timer
+        Dim WaitTime As Single
+        WaitTime = Timer + Period 
         Do
             DoEvents
-        Loop While TimeNow + Period > Timer
+        Loop While WaitTime > Timer
     End Sub
     
     '  Procedures:   CalledFromWhere
@@ -80,7 +80,7 @@
         Dim rng As Range
         On Error Resume Next
         Set rng = Application.Caller
-        err.Clear
+        Err.Clear
         If rng Is Nothing Then CalledFromVBA = True Else CalledFromVBA = False
     End Function
 
@@ -88,7 +88,7 @@
         Dim rng As Range
         On Error Resume Next
         Set rng = Application.Caller
-        err.Clear
+        Err.Clear
         If Not rng Is Nothing Then CalledFromWorksheet = True Else CalledFromWorksheet = False
     End Function
 
