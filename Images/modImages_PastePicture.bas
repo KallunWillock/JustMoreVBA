@@ -1,7 +1,7 @@
     '***************************************************************************
     '* AUTHOR:          STEPHEN BULLEN, Business Modelling Solutions Ltd.   (Stephen@BMSLtd.co.uk | https://web.archive.org/web/*/https://www.bmsltd.co.uk/)
     '                   15 Nov 1998 - Created this module comprising
-                        KALLUN WILLOCK  (https://github.com/kallunwillock/)
+    '                   KALLUN WILLOCK  (https://github.com/kallunwillock/)
     '                   12 Sep 2022 - Updated API declaration and related data types for 64bit compatibility
     '                   23 Jun 2023 - Updated code - streamlined per xlBangAnywhere
     '* URL:             https://github.dev/KallunWillock/JustMoreVBA/blob/main/Images/modImages_PastePicture.bas
