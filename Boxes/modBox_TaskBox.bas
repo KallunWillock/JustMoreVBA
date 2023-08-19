@@ -1,15 +1,18 @@
 Attribute VB_Name = "modBox_TaskBox"
+
                                                                                                                                                                                                                             ' _
     |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                                                                                                     ' _
     ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                                                                                                     ' _
-    ||||||||||||||||||||||||||              TASKBOX (v1.2)           ||||||||||||||||||||||||||||||||||                                                                                                                     ' _
+    ||||||||||||||||||||||||||              TASKBOX (v1.3)           ||||||||||||||||||||||||||||||||||                                                                                                                     ' _
     ||||||||||||||||||||||||||                                       ||||||||||||||||||||||||||||||||||                                                                                                                     ' _
     |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||                                                                                                                     ' _
                                                                                                                                                                                                                             ' _
     AUTHOR:   Kallun Willock                                                                                                                                                                                                ' _
     PURPOSE:  A basic implementation of the TaskDialog, here referred to as the TaskBox.                                                                                                                                    ' _
+    REFERENCE:http://vbnet.mvps.org/index.html?code/comdlg/taskdialog.htm                                                                                                                                                   ' _
     LICENSE:  MIT                                                                                                                                                                                                           ' _
-    VERSION:  1.2        15/06/2022         Various amendments and addition of further example                                                                                                                              ' _
+    VERSION:  1.3        19/09/2023         Various corrections to the code                                                                                                                                                 ' _
+              1.2        15/06/2022         Various amendments and addition of further example                                                                                                                              ' _
               1.1        07/04/2022         Improved support for Unicode text.                                                                                                                                              ' _
               1.0        18/02/2022         Version 1 uploaded to Github. Compatible with 32-bit and 64-bit Office                                                                                                          ' _
                                                                                                                                                                                                                             ' _
@@ -68,10 +71,13 @@ Attribute VB_Name = "modBox_TaskBox"
     '    int                            *pnButton
     '  );
     
-    #If Win64 Then
+    #If VBA7 Then
         Private Declare PtrSafe Function TaskDialog Lib "comctl32.dll" (ByVal hWndParent As LongPtr, ByVal hInstance As LongPtr, ByVal pszWindowTitle As LongPtr, ByVal pszMainInstruction As LongPtr, ByVal pszContent As LongPtr, ByVal dwCommonButtons As Long, ByVal pszIcon As LongPtr, pnButton As Long) As Long
     #Else
-        Private Declare Function TaskDialog Lib "comctl32.dll" (ByVal hwndParent As Long, ByVal hInstance As Long, ByVal pszWindowTitle As Long, ByVal pszMainInstruction As Long, ByVal pszContent As Long, ByVal dwCommonButtons As Long, ByVal pszIcon As Long, pnButton As Long) As Long
+        Private Enum LongPtr
+            [_]
+        End Enum
+        Private Declare Function TaskDialog Lib "comctl32.dll" (ByVal hwndParent As LongPtr, ByVal hInstance As LongPtr, ByVal pszWindowTitle As LongPtr, ByVal pszMainInstruction As LongPtr, ByVal pszContent As LongPtr, ByVal dwCommonButtons As Long, ByVal pszIcon As LongPtr, pnButton As Long) As Long
     #End If
 
 '      :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -190,16 +196,9 @@ Attribute VB_Name = "modBox_TaskBox"
     Public Function TaskBox(ByVal TaskBoxMainInstruction As String, Optional TaskBoxContent As String = "", _
                             Optional ByVal TaskBoxTitle As String = " ", _
                             Optional ByVal dwButtons As TDBUTTONS = TDCBF_OK_BUTTON, _
-                            Optional ByVal lIcon As TDICONS = TD_SHIELD_GRADIENT_ICON) As TDBUTTONS
+                            Optional ByVal lIcon As TDICONS = TD_SHIELD_GRADIENT_ICON, Optional ByVal hWndParent As LongPtr = -1) As TDBUTTONS
 
-      #If Win64 Then
-        Dim hWndParent          As LongPtr
         Dim dwIcon              As LongPtr
-      #Else
-        Dim hWndParent          As Long
-        Dim dwIcon              As Long
-      #End If
-      
         Dim pnButton            As Long
         Dim Result              As TDBUTTONS_RETURN_CODES
         
@@ -210,11 +209,11 @@ Attribute VB_Name = "modBox_TaskBox"
         
         '  From MSDN: "If you create a task dialog while a dialog box is present, use a handle to the dialog box as the hWndParent parameter.
         '              The hWndParent parameter should not identify a child window, such as a control in a dialog box."
-        
-        hWndParent = Application.hWnd
-    
+        If hWndParent = -1 Then hWndParent = Application.hWnd
         Result = TaskDialog(hWndParent, 0&, StrPtr(TaskBoxTitle), StrPtr(TaskBoxMainInstruction), StrPtr(TaskBoxContent), dwButtons, dwIcon, pnButton)
     
+        '   From VBNET MVPS: "The value of the button the user pressed is not returned as a result of the function call but rather as a parameter passed
+        '   ByRef to the function. The return value of the call now represents success (0) or OUTOFMEMORY, INVALIDARG, or simply "FAIL"."
         TaskBox = pnButton
     
     End Function
@@ -263,4 +262,6 @@ Attribute VB_Name = "modBox_TaskBox"
         End If
         
     End Function
+
+
 
