@@ -1,4 +1,5 @@
 Attribute VB_Name = "API_ADVAPI32"
+'@Lang VBA
 
 Type SID_IDENTIFIER_AUTHORITY
     Value(0 To 5) As Byte

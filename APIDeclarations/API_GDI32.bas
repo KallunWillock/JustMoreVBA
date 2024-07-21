@@ -1,3 +1,5 @@
+Attribute VB_Name = "API_GDI32"
+'@Lang VBA
 
 #If VBA7 And Win64 Then
 
