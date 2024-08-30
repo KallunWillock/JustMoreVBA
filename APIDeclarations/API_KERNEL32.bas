@@ -1,3 +1,4 @@
+Attribute VB_Name = "API_KERNEL32"
 
 #If VBA7 And Win64 Then
 

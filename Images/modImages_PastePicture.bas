@@ -1,3 +1,5 @@
+Attribute VB_Name = "modImages_PastePicture"
+
     '***************************************************************************
     '* AUTHOR:          STEPHEN BULLEN, Business Modelling Solutions Ltd.   (Stephen@BMSLtd.co.uk | https://web.archive.org/web/*/https://www.bmsltd.co.uk/)
     '                   15 Nov 1998 - Created this module comprising
