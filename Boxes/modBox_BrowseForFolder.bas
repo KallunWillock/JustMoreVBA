@@ -143,7 +143,7 @@ Attribute VB_Name = "modBox_BrowseForFolder"
       .Owner = 0^
       .RootIdl = 0^
       .DisplayName = StrPtr(Space(MAX_PATH))
-      .Title = VarPtr(Title & vbNullChar)
+      .Title = StrPtr(Title & vbNullChar)
       .Flags = Flags
       If StartFolder <> "" Then
         .CallbackParam = StrPtr(StartFolder & vbNullChar)
